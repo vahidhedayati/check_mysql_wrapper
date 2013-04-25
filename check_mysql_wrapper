@@ -10,7 +10,6 @@ CRIT=$7;
 
 SPATH="/usr/local/nagios/libexec";
 f1=$($SPATH/check_mysql -H $HOST -P $PORT -d $DB -u $USER -p $PASS $EXTRA -w $WARN -c $CRIT 2>&1; echo  "|EXIT:"$?)
-OFS=$IFS;
 IFS="|";
 exit_code=$(echo -e $f1|grep "EXIT:"|awk -F":" '{print $2}')
 if [[ $exit_code == 0 ]]; then
