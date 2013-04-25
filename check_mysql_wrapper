@@ -14,8 +14,7 @@ OFS=$IFS;
 IFS="|";
 exit_code=$(echo -e $f1|grep "EXIT:"|awk -F":" '{print $2}')
 if [[ $exit_code == 0 ]]; then
-  echo $f1|grep -v "EXIT:"|sed -e "s/: /=/g"|sed -e "s/\(.*\) \(.*\)=\(.*\)/\1"_"\2"="\3/g" |awk  -v HOST=$HOST -v DB=$DB  '{print "MYSQL "HOST" "DB" OK|"$0}'|sed "s/[[:space:]]tables=/_tables=/g"|sed  -e "s/Slow queries/Slow_Queri
-es/g"|sed -e "s/Queries per second_avg=\(.*\)/"Queries_ps_avg="\1"s\;\;\;0"/g"
+  echo $f1|grep -v "EXIT:"|sed -e "s/: /=/g"|sed -e "s/\(.*\) \(.*\)=\(.*\)/\1"_"\2"="\3/g" |awk  -v HOST=$HOST -v DB=$DB  '{print "MYSQL "HOST" "DB" OK|"$0}'|sed "s/[[:space:]]tables=/_tables=/g"|sed  -e "s/Slow queries/Slow_Queries/g"|sed -e "s/Queries per second_avg=\(.*\)/"Queries_ps_avg="\1"s\;\;\;0"/g"
 	exit $exit_code
 elif [[ $exit_code == 1 ]]; then
 	echo $f1|grep -v "EXIT:"|awk -v HOST=$HOST -v DB=$DB '{print "MYSQL "HOST" "DB" WARNING: "$0}'
