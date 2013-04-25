@@ -1,0 +1,26 @@
+#!/bin/bash
+
+HOST=$1
+PORT=$2;
+DB=$3;
+USER=$4;
+PASS=$5;
+WARN=$6;
+CRIT=$7;
+
+SPATH="/usr/local/nagios/libexec";
+f1=$($SPATH/check_mysql -H $HOST -P $PORT -d $DB -u $USER -p $PASS $EXTRA -w $WARN -c $CRIT 2>&1; echo  "|EXIT:"$?)
+OFS=$IFS;
+IFS="|";
+exit_code=$(echo -e $f1|grep "EXIT:"|awk -F":" '{print $2}')
+if [[ $exit_code == 0 ]]; then
+  echo $f1|grep -v "EXIT:"|sed -e "s/: /=/g"|sed -e "s/\(.*\) \(.*\)=\(.*\)/\1"_"\2"="\3/g" |awk  -v HOST=$HOST -v DB=$DB  '{print "MYSQL "HOST" "DB" OK|"$0}'|sed "s/[[:space:]]tables=/_tables=/g"|sed  -e "s/Slow queries/Slow_Queri
+es/g"|sed -e "s/Queries per second_avg=\(.*\)/"Queries_ps_avg="\1"s\;\;\;0"/g"
+	exit $exit_code
+elif [[ $exit_code == 1 ]]; then
+	echo $f1|grep -v "EXIT:"|awk -v HOST=$HOST -v DB=$DB '{print "MYSQL "HOST" "DB" WARNING: "$0}'
+	exit $exit_code
+else
+	echo $f1|grep -v "EXIT:"|awk -v HOST=$HOST -v DB=$DB  '{print "MYSQL "HOST" "DB" ERROR: "$0}'
+	exit $exit_code
+fi
